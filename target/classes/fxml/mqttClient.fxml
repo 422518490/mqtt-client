@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<SplitPane dividerPositions="0.3870967741935484" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1017.0" prefWidth="1086.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mqtt.fx.MqttController">
+  <items>
+      <TabPane>
+         <tabs>
+            <Tab closable="false" text="MQTT客户端连接">
+               <content>
+                  <TitledPane blendMode="GREEN" collapsible="false" text="连接">
+                     <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="921.0" prefWidth="415.0">
+                           <children>
+                              <Label layoutX="14.0" layoutY="26.0" text="服务端地址" />
+                              <TextField fx:id="serverAddress" layoutX="91.0" layoutY="22.0" prefHeight="23.0" prefWidth="200.0" text="tcp://127.0.0.1:61613" />
+                              <TextField fx:id="clientId" layoutX="91.0" layoutY="61.0" prefHeight="23.0" prefWidth="200.0" text="client124" />
+                              <Label layoutX="14.0" layoutY="65.0" text="客服端标识" />
+                              <Label layoutX="14.0" layoutY="103.0" text="用户名" />
+                              <Label layoutX="14.0" layoutY="145.0" text="密码" />
+                              <Label layoutX="14.0" layoutY="227.0" text="连接状态" />
+                              <TextField fx:id="userName" layoutX="91.0" layoutY="102.0" prefHeight="23.0" prefWidth="200.0" text="admin" />
+                              <TextField fx:id="connectionStatus" disable="true" editable="false" layoutX="93.0" layoutY="223.0" prefHeight="23.0" prefWidth="200.0" promptText="已断开连接" />
+                              <PasswordField fx:id="password" layoutX="91.0" layoutY="141.0" prefHeight="23.0" prefWidth="200.0" text="password" />
+                              <Button fx:id="connect" layoutX="93.0" layoutY="267.0" mnemonicParsing="false" onMouseClicked="#connect" prefHeight="23.0" prefWidth="62.0" text="连接" />
+                              <Button fx:id="disConnect" layoutX="207.0" layoutY="267.0" mnemonicParsing="false" onMouseClicked="#disConnect" prefHeight="23.0" prefWidth="68.0" text="断开连接" />
+                              <Label layoutX="11.0" layoutY="182.0" text="心跳时长" />
+                              <TextField fx:id="keepAlive" layoutX="91.0" layoutY="180.0" prefHeight="23.0" prefWidth="200.0" text="10" />
+                              <TitledPane animated="false" collapsible="false" expanded="false" layoutY="335.0" prefHeight="23.0" prefWidth="476.0" text="订阅">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                </content>
+                              </TitledPane>
+                              <Separator layoutY="322.0" prefHeight="0.0" prefWidth="478.0" />
+                              <ImageView fx:id="addTopicButton" fitHeight="28.0" fitWidth="21.0" layoutX="2.0" layoutY="361.0" onMouseClicked="#addTopic" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../img/add.png" />
+                                 </image></ImageView>
+                              <ImageView fx:id="delTopicButton" fitHeight="26.0" fitWidth="21.0" layoutX="32.0" layoutY="367.0" onMouseClicked="#delTopic" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../img/del.png" />
+                                 </image>
+                              </ImageView>
+                              <ImageView fx:id="updateTopicButton" fitHeight="28.0" fitWidth="21.0" layoutX="67.0" layoutY="368.0" onMouseClicked="#updateTopic" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../img/update.png" />
+                                 </image>
+                              </ImageView>
+                              <TableView fx:id="topicTable" editable="true" layoutX="-4.0" layoutY="388.0" prefHeight="200.0" prefWidth="470.0">
+                                <columns>
+                                  <TableColumn fx:id="blankCheckBoxColumn" prefWidth="59.000030517578125" text="勾选" />
+                                  <TableColumn fx:id="topicColumn" editable="true" prefWidth="287.0" text="主题" />
+                                    <TableColumn fx:id="qosColumn" editable="true" prefWidth="123.0" text="请求服务质量" />
+                                </columns>
+                              </TableView>
+                              <Button fx:id="subscribeTopic" layoutX="108.0" layoutY="600.0" mnemonicParsing="false" onMouseClicked="#subscribeTopics" prefHeight="23.0" prefWidth="60.0" text="订阅" />
+                              <Button fx:id="unsubscribeTopic" layoutX="192.0" layoutY="600.0" mnemonicParsing="false" onMouseClicked="#unsubscribeTopics" text="取消订阅" />
+                              <Separator layoutX="2.0" layoutY="648.0" prefHeight="0.0" prefWidth="461.0" />
+                              <TitledPane animated="false" collapsible="false" expanded="false" layoutX="-1.0" layoutY="661.0" prefHeight="23.0" prefWidth="463.0" text="发布">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                </content>
+                              </TitledPane>
+                              <Label layoutX="8.0" layoutY="696.0" prefHeight="15.0" prefWidth="27.0" text="主题" />
+                              <TextField fx:id="publishTitle" layoutX="67.0" layoutY="692.0" prefHeight="23.0" prefWidth="352.0" />
+                              <Label layoutX="8.0" layoutY="731.0" text="服务质量" />
+                              <ChoiceBox fx:id="publishQos" layoutX="67.0" layoutY="727.0" prefWidth="150.0" />
+                              <Label layoutX="6.0" layoutY="777.0" text="消息" />
+                              <Button fx:id="publish" layoutX="178.0" layoutY="870.0" mnemonicParsing="false" onMouseClicked="#publishTopic" prefHeight="23.0" prefWidth="55.0" text="发布" />
+                              <TextArea fx:id="publishMessage" layoutX="68.0" layoutY="777.0" prefHeight="81.0" prefWidth="343.0" />
+                           </children>
+                        </AnchorPane>
+                     </content>
+                     <padding>
+                        <Insets top="15.0" />
+                     </padding>
+                  </TitledPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+      <TabPane>
+         <tabs>
+            <Tab closable="false" text="历史记录">
+               <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="528.0" prefWidth="610.0">
+                     <children>
+                        <TableView fx:id="historyTable" accessibleRole="PARENT" editable="true" layoutX="-2.0" prefHeight="760.0" prefWidth="747.0">
+                          <columns>
+                            <TableColumn fx:id="eventColumn" editable="false" prefWidth="91.0" text="事件" />
+                            <TableColumn fx:id="titleColumn" editable="false" prefWidth="172.0" text="主题" />
+                              <TableColumn fx:id="messageColumn" editable="false" prefWidth="156.0" text="消息" />
+                              <TableColumn fx:id="historyQosColumn" editable="false" prefWidth="112.0" text="请求服务质量" />
+                              <TableColumn fx:id="dateTimeColumn" editable="false" prefWidth="129.0" text="时间" />
+                          </columns>
+                           <opaqueInsets>
+                              <Insets bottom="10.0" right="10.0" />
+                           </opaqueInsets>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+  </items>
+</SplitPane>
