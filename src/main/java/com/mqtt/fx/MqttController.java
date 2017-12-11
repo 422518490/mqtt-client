@@ -1,8 +1,6 @@
 package com.mqtt.fx;
 
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,13 +9,16 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 
 public class MqttController {
+
+    private Logger logger = LoggerFactory.getLogger(MqttController.class);
 
     //服务端地址
     @FXML
@@ -143,6 +144,7 @@ public class MqttController {
             mqttClient.connect(mqttConnectOptions);
         } catch (Exception e) {
             text = "连接异常";
+            logger.error("连接失败",e);
             e.printStackTrace();
         }finally {
             connectionStatus.setText(text);
@@ -163,6 +165,7 @@ public class MqttController {
             mqttClient.disconnect();
         } catch (Exception e) {
             text = "断开连接异常";
+            logger.error("断开连接失败",e);
             e.printStackTrace();
         }finally {
             connectionStatus.setText(text);
@@ -246,6 +249,7 @@ public class MqttController {
                     mqttClient.unsubscribe(topicModel.getTopic());
                     topicModelObservableList.remove(topicModel);
                 } catch (MqttException e) {
+                    logger.error("删除主题失败",e);
                     e.printStackTrace();
                 }
             }
@@ -273,6 +277,7 @@ public class MqttController {
                     try {
                         mqttClient.unsubscribe(t.getOldValue());
                     } catch (MqttException e) {
+                        logger.error("更新主题失败",e);
                         e.printStackTrace();
                     }
                 });
@@ -293,6 +298,7 @@ public class MqttController {
                     try {
                         mqttClient.unsubscribe(topicModel.getTopic());
                     } catch (MqttException e) {
+                        logger.error("更新主题失败",e);
                         e.printStackTrace();
                     }
                 });
@@ -331,6 +337,7 @@ public class MqttController {
                 mqttClient.subscribe(topics,qos);
             } catch (Exception e) {
                 text = "订阅失败";
+                logger.error("订阅失败",e);
                 e.printStackTrace();
             }finally {
                 //主题buffer
@@ -379,6 +386,7 @@ public class MqttController {
                 mqttClient.unsubscribe(topics);
             } catch (Exception e) {
                 text = "取消订阅失败";
+                logger.error("取消订阅失败",e);
                 e.printStackTrace();
             }finally {
                 StringBuffer topicBuffer = new StringBuffer();
@@ -389,28 +397,6 @@ public class MqttController {
                 historyMessageModelObservableList.add(historyMessageModel);
                 historyTable.setItems(historyMessageModelObservableList);
             }
-        }
-    }
-
-    class PushCallback implements MqttCallback {
-
-        public void connectionLost(Throwable throwable) {
-            // 连接丢失后，一般在这里面进行重连
-            System.out.println("连接断开，可以做重连");
-        }
-
-        public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-            // subscribe后得到的消息会执行到这里面
-            System.out.println("接收消息主题 : " + topic);
-            System.out.println("接收消息Qos : " + mqttMessage.getQos());
-            System.out.println("接收消息内容 : " + new String(mqttMessage.getPayload()));
-            HistoryMessageModel historyMessageModel = new HistoryMessageModel("已接收topic",topic,new String(mqttMessage.getPayload()),mqttMessage.getQos()+"",LocalDateTime.now());
-            historyMessageModelObservableList.add(historyMessageModel);
-            historyTable.setItems(historyMessageModelObservableList);
-        }
-
-        public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-            System.out.println("deliveryComplete---------" + iMqttDeliveryToken.isComplete());
         }
     }
 
@@ -436,6 +422,7 @@ public class MqttController {
             mqttDeliveryToken.waitForCompletion();
         } catch (Exception e) {
             text = "发布topic异常";
+            logger.error("发布topic失败",e);
             e.printStackTrace();
         }finally {
             HistoryMessageModel historyMessageModel ;
@@ -445,6 +432,30 @@ public class MqttController {
             historyMessageModel = new HistoryMessageModel(text,publishTitle.getText(),publishMessage.getText(),qos+"",LocalDateTime.now());
             historyMessageModelObservableList.add(historyMessageModel);
             historyTable.setItems(historyMessageModelObservableList);
+        }
+    }
+
+
+
+    class PushCallback implements MqttCallback {
+
+        public void connectionLost(Throwable throwable) {
+            // 连接丢失后，一般在这里面进行重连
+            System.out.println("连接断开，可以做重连");
+        }
+
+        public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+            // subscribe后得到的消息会执行到这里面
+            System.out.println("接收消息主题 : " + topic);
+            System.out.println("接收消息Qos : " + mqttMessage.getQos());
+            System.out.println("接收消息内容 : " + new String(mqttMessage.getPayload()));
+            HistoryMessageModel historyMessageModel = new HistoryMessageModel("已接收topic",topic,new String(mqttMessage.getPayload()),mqttMessage.getQos()+"",LocalDateTime.now());
+            historyMessageModelObservableList.add(historyMessageModel);
+            historyTable.setItems(historyMessageModelObservableList);
+        }
+
+        public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+            System.out.println("deliveryComplete---------" + iMqttDeliveryToken.isComplete());
         }
     }
 }

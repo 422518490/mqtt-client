@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+scan:当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true
+scanPeriod:设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。
+           当scan为true时，此属性生效。默认的时间间隔为1分钟
+debug:当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+-->
+<configuration scan="true" scanPeriod="60 second" debug="false">
+    <!--日志路径-->
+    <property name="LOG_PATH" value="log" />
+    <!--控制台打印设置-->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder 默认配置为PatternLayoutEncoder且是唯一有用的 -->
+        <!--
+            %d{yyyy-MM-dd HH:mm:ss.SSS}——日志输出时间，可以定义为如%d{HH:mm:ss.SSS}的样式
+            %-4relative 输出从程序启动到创建日志记录的时间，单位是毫秒，进行左对齐 且最小宽度为4
+            %thread——输出日志的进程名字
+            %-5level——日志级别，并且使用5个字符靠左对齐
+            %logger{36}——日志输出者的名字,名字长度从右到左为36个长度，大于36个长度的字符不显示，长度可以随便设置，
+            为0表示只输入logger最右边点符号之后的字符串
+            %msg——日志消息
+            %n——平台的换行符
+        -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-4relative [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <!--字符串 System.out 或者 System.err ，默认 System.out-->
+        <target>System.out</target>
+    </appender>
+
+    <!--<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        &lt;!&ndash;文件路径下的日志&ndash;&gt;
+        <file>${LOG_PATH}/testFile.log</file>
+        &lt;!&ndash;是否添加到末尾，如果是 true，日志被追加到文件结尾，如果是 false，清空现存文件，默认是true&ndash;&gt;
+        <append>true</append>
+        <encoder>
+            &lt;!&ndash;日志格式&ndash;&gt;
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        &lt;!&ndash;如果是 true，日志会被安全的写入文件，即使其他的FileAppender也在向此文件做写入操作，效率低，默认是 false&ndash;&gt;
+        <prudent>true</prudent>
+    </appender>-->
+    <!--滚动日志记录-->
+    <appender name="TIME_ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--日志先保存到该文件中，日志文件满足设置大小触发滚动条件-->
+        <!--<file>${LOG_PATH}/timeFile.log</file>-->
+        <!--每天一个日志,这个是最常用的记录方式-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/logFile.%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <!--保存1天的日志记录，超过该天数的日都会被删除-->
+            <maxHistory>1</maxHistory>
+            <!--记录日志大小，超过该大小生成新的日志文件，配置该属性时日志文件必须包含"-%i"-->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>1MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--<appender name="FIXED_ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        &lt;!&ndash;日志先保存到该文件中，日志文件满足设置大小触发滚动条件&ndash;&gt;
+        <file>${LOG_PATH}/test.log</file>
+        &lt;!&ndash;固定大小日志，设置了3个文件大小，当文件大小超过3个的时候将覆盖最早的日志文件&ndash;&gt;
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            &lt;!&ndash;可以设置为压缩格式，支持zip,gz2种格式&ndash;&gt;
+            &lt;!&ndash;<fileNamePattern>${LOG_PATH}/tests.%i.log.zip</fileNamePattern>&ndash;&gt;
+            <fileNamePattern>${LOG_PATH}/tests.%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>3</maxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>1MB</maxFileSize>
+        </triggeringPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        &lt;!&ndash;级别过滤器过滤&ndash;&gt;
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            &lt;!&ndash;
+                过滤的级别，
+                过滤器会有返回个枚举值，即DENY，NEUTRAL，ACCEPT其中之一。
+                返回DENY，日志将立即被抛弃不再经过其他过滤器；
+                返回NEUTRAL，有序列表里的下个过滤器过接着处理日志；
+                返回ACCEPT，日志会被立即处理，不再经过剩余过滤器
+             &ndash;&gt;
+            <level>DEBUG</level>
+            &lt;!&ndash;用于配置符合过滤条件的操作&ndash;&gt;
+            <onMatch>ACCEPT</onMatch>
+            &lt;!&ndash;用于配置不符合过滤条件的操作&ndash;&gt;
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOG_PATH}/logger_debug.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            &lt;!&ndash;压缩为zip格式&ndash;&gt;
+            <fileNamePattern>${LOG_PATH}/logger_debug.log.%d{yyyy-MM-dd}.zip</fileNamePattern>
+            &lt;!&ndash;保留10天的日志&ndash;&gt;
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        &lt;!&ndash;临界值过滤器过滤&ndash;&gt;
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            &lt;!&ndash;
+                临界值过滤器，过滤掉低于指定临界值的日志;
+                当日志级别等于或高于临界值时，过滤器返回NEUTRAL；
+                当日志级别低于临界值时，日志会被拒绝
+             &ndash;&gt;
+            <level>INFO</level>
+        </filter>
+        <file>${LOG_PATH}/logger_info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/logger_info.log.%d{yyyy-MM-dd}.zip</fileNamePattern>
+            &lt;!&ndash;保留10天的日志&ndash;&gt;
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>-->
+    <!-- 异步输出 -->
+    <appender name="ASYNC_LOG" class="ch.qos.logback.classic.AsyncAppender">
+        <!--
+        不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的event日志,
+        只保留WARN和ERROR级别的event,为了保持所有的events，设置该值为0
+        -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>1024</queueSize>
+        <appender-ref ref="INFO_FILE"/>
+    </appender>
+
+    <!--
+        level为日志级别，不区分大小写,可以设置单个类的日志级别，也可以设置路径下面所有类的日志级别，如果没有设置日志级别将会
+        继承root的日志级别
+        name是包或类的全路径名
+        addtivity为是否向上级logger传递打印信息，默认是true
+    -->
+    <logger name="com.logger.Logger2Controller" level="warn" addtivity="false"/>
+
+    <!--root用来设置appender-ref涉及的名称的日志级别-->
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+        <appender-ref ref="TIME_ROLLING_FILE" />
+        <appender-ref ref="FIXED_ROLLING_FILE" />
+        <appender-ref ref="DEBUG_FILE" />
+        <appender-ref ref="INFO_FILE" />
+        <appender-ref ref="ASYNC_LOG" />
+    </root>
+</configuration>
