@@ -120,10 +120,16 @@ public class MqttController {
             // 设置是否清空session,这里如果设置为false表示服务器会保留客户端的连接记录，
             // 这里设置为true表示每次连接到服务器都以新的身份连接
             mqttConnectOptions.setCleanSession(true);
+            String userNameText = userName.getText();
             // 设置连接的用户名
-            mqttConnectOptions.setUserName(userName.getText());
+            if (!"".equals(userNameText)){
+                mqttConnectOptions.setUserName(userNameText);
+            }
+            String passwordText = password.getText();
             // 设置连接的密码
-            mqttConnectOptions.setPassword(password.getText().toCharArray());
+            if(!"".equals(passwordText)){
+                mqttConnectOptions.setPassword(passwordText.toCharArray());
+            }
             // 设置超时时间 单位为秒
             mqttConnectOptions.setConnectionTimeout(10);
             // 设置会话心跳时间 单位为秒
@@ -135,7 +141,7 @@ public class MqttController {
             //setWill方法，如果项目中需要知道客户端是否掉线可以调用该方法。设置最终端口的通知
             //mqttConnectOptions.setWill(mqttTopic,"close".getBytes(),2,true);
             mqttClient.connect(mqttConnectOptions);
-        } catch (MqttException e) {
+        } catch (Exception e) {
             text = "连接异常";
             e.printStackTrace();
         }finally {

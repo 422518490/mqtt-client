@@ -18,7 +18,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<SplitPane dividerPositions="0.3870967741935484" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1017.0" prefWidth="1086.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mqtt.fx.MqttController">
+<SplitPane dividerPositions="0.3870967741935484" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1017.0" prefWidth="1267.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mqtt.fx.MqttController">
   <items>
       <TabPane>
          <tabs>
@@ -101,7 +101,7 @@
                <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="528.0" prefWidth="610.0">
                      <children>
-                        <TableView fx:id="historyTable" accessibleRole="PARENT" editable="true" layoutX="-2.0" prefHeight="760.0" prefWidth="747.0">
+                        <TableView fx:id="historyTable" accessibleRole="PARENT" editable="true" layoutX="-2.0" prefHeight="760.0" prefWidth="772.0">
                           <columns>
                             <TableColumn fx:id="eventColumn" editable="false" prefWidth="91.0" text="事件" />
                             <TableColumn fx:id="titleColumn" editable="false" prefWidth="172.0" text="主题" />
