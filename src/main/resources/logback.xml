@@ -151,11 +151,11 @@ debug:当此属性设置为true时，将打印出logback内部日志信息，实
     <!--root用来设置appender-ref涉及的名称的日志级别-->
     <root level="DEBUG">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
+        <!--<appender-ref ref="FILE" />-->
         <appender-ref ref="TIME_ROLLING_FILE" />
-        <appender-ref ref="FIXED_ROLLING_FILE" />
+        <!--<appender-ref ref="FIXED_ROLLING_FILE" />
         <appender-ref ref="DEBUG_FILE" />
         <appender-ref ref="INFO_FILE" />
-        <appender-ref ref="ASYNC_LOG" />
+        <appender-ref ref="ASYNC_LOG" />-->
     </root>
 </configuration>

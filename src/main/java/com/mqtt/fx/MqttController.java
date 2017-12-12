@@ -44,6 +44,14 @@ public class MqttController {
     @FXML
     private TextField connectionStatus;
 
+    //连接按钮
+    @FXML
+    private Button connectButton;
+
+    //断开连接按钮
+    @FXML
+    private Button disConnectButton;
+
     //历史记录表格
     @FXML
     private TableView<HistoryMessageModel> historyTable;
@@ -142,6 +150,15 @@ public class MqttController {
             //setWill方法，如果项目中需要知道客户端是否掉线可以调用该方法。设置最终端口的通知
             //mqttConnectOptions.setWill(mqttTopic,"close".getBytes(),2,true);
             mqttClient.connect(mqttConnectOptions);
+            //连接成功后连接按钮不可用，断开连接按钮可用
+            connectButton.setDisable(true);
+            disConnectButton.setDisable(false);
+            //输入框不可用
+            serverAddress.setDisable(true);
+            clientId.setDisable(true);
+            userName.setDisable(true);
+            password.setDisable(true);
+            keepAlive.setDisable(true);
         } catch (Exception e) {
             text = "连接异常";
             logger.error("连接失败",e);
@@ -163,6 +180,15 @@ public class MqttController {
         String text = "已断开连接";
         try {
             mqttClient.disconnect();
+            //连接成功后连接按钮可用，断开连接按钮不可用
+            connectButton.setDisable(false);
+            disConnectButton.setDisable(true);
+            //输入框可用
+            serverAddress.setDisable(false);
+            clientId.setDisable(false);
+            userName.setDisable(false);
+            password.setDisable(false);
+            keepAlive.setDisable(false);
         } catch (Exception e) {
             text = "断开连接异常";
             logger.error("断开连接失败",e);

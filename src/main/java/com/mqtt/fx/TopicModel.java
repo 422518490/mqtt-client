@@ -25,7 +25,7 @@ public class TopicModel {
     private IntegerProperty addNewBoolean;
 
     public TopicModel(){
-        this("请修改主题","-1");
+        this("请修改主题","0");
     }
 
     public TopicModel(String topic, String qos) {

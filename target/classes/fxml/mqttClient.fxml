@@ -26,7 +26,7 @@
                <content>
                   <TitledPane blendMode="GREEN" collapsible="false" text="连接">
                      <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="921.0" prefWidth="415.0">
+                      <AnchorPane focusTraversable="true" minHeight="0.0" minWidth="0.0" prefHeight="921.0" prefWidth="415.0">
                            <children>
                               <Label layoutX="14.0" layoutY="26.0" text="服务端地址" />
                               <TextField fx:id="serverAddress" layoutX="91.0" layoutY="22.0" prefHeight="23.0" prefWidth="200.0" text="tcp://127.0.0.1:61613" />
@@ -38,8 +38,8 @@
                               <TextField fx:id="userName" layoutX="91.0" layoutY="102.0" prefHeight="23.0" prefWidth="200.0" text="admin" />
                               <TextField fx:id="connectionStatus" disable="true" editable="false" layoutX="93.0" layoutY="223.0" prefHeight="23.0" prefWidth="200.0" promptText="已断开连接" />
                               <PasswordField fx:id="password" layoutX="91.0" layoutY="141.0" prefHeight="23.0" prefWidth="200.0" text="password" />
-                              <Button fx:id="connect" layoutX="93.0" layoutY="267.0" mnemonicParsing="false" onMouseClicked="#connect" prefHeight="23.0" prefWidth="62.0" text="连接" />
-                              <Button fx:id="disConnect" layoutX="207.0" layoutY="267.0" mnemonicParsing="false" onMouseClicked="#disConnect" prefHeight="23.0" prefWidth="68.0" text="断开连接" />
+                              <Button fx:id="connectButton" layoutX="93.0" layoutY="267.0" mnemonicParsing="false" onMouseClicked="#connect" prefHeight="23.0" prefWidth="62.0" text="连接" />
+                              <Button fx:id="disConnectButton" disable="true" layoutX="207.0" layoutY="267.0" mnemonicParsing="false" onMouseClicked="#disConnect" prefHeight="23.0" prefWidth="68.0" text="断开连接" />
                               <Label layoutX="11.0" layoutY="182.0" text="心跳时长" />
                               <TextField fx:id="keepAlive" layoutX="91.0" layoutY="180.0" prefHeight="23.0" prefWidth="200.0" text="10" />
                               <TitledPane animated="false" collapsible="false" expanded="false" layoutY="335.0" prefHeight="23.0" prefWidth="476.0" text="订阅">
