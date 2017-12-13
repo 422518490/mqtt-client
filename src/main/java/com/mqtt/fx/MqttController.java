@@ -1,6 +1,8 @@
 package com.mqtt.fx;
 
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -19,6 +21,15 @@ import java.time.LocalDateTime;
 public class MqttController {
 
     private Logger logger = LoggerFactory.getLogger(MqttController.class);
+
+    @FXML
+    private SplitPane mqttSplitPane;
+
+    @FXML
+    private TabPane leftTabPane;
+
+    @FXML
+    private TabPane rightTabPane;
 
     //服务端地址
     @FXML
@@ -104,6 +115,22 @@ public class MqttController {
     @FXML
     private TextArea publishMessage;
 
+    //订阅的title pane
+    @FXML
+    private TitledPane subscribeTitledPane;
+
+    //连接与订阅间的分割线
+    @FXML
+    private Separator connectSeparator;
+
+    //发布的title pane
+    @FXML
+    private TitledPane publishTitledPane;
+
+    //订阅与发布之间的分割线
+    @FXML
+    private Separator subscribeSeparator;
+
     private MqttClient mqttClient;
     private MqttConnectOptions mqttConnectOptions;
 
@@ -169,6 +196,10 @@ public class MqttController {
             HistoryMessageModel historyMessageModel = new HistoryMessageModel("连接MQTT服务器","连接MQTT服务器",text,"",LocalDateTime.now());
             historyMessageModelObservableList.add(historyMessageModel);
             historyTable.setItems(historyMessageModelObservableList);
+            StageSelf stageSelf = StageSelf.getInstance();
+            if(stageSelf.getStage() != null){
+                stageSelf.getStage().widthProperty().addListener(new Change());
+            }
         }
     }
 
@@ -207,6 +238,7 @@ public class MqttController {
      */
     @FXML
     private void initialize(){
+
         //历史记录表格
         eventColumn.setCellValueFactory(cellData -> cellData.getValue().eventProperty());
         titleColumn.setCellValueFactory(cellData -> cellData.getValue().titleProperty());
@@ -224,6 +256,14 @@ public class MqttController {
         publishQos.setItems(FXCollections.observableArrayList("0-至多一次","1-至少一次","2-只有一次","3-保留"));
         //设置默认选中值
         publishQos.setValue("0-至多一次");
+
+        //设置分割线的左右两边窗体大小
+        changePane();
+        StageSelf stageSelf = StageSelf.getInstance();
+        if(stageSelf.getStage() != null){
+            stageSelf.getStage().widthProperty().addListener(new Change());
+            stageSelf.getStage().heightProperty().addListener(new Change());
+        }
 
     }
 
@@ -461,6 +501,15 @@ public class MqttController {
         }
     }
 
+    private void changePane(){
+        //设置分割线的左右两边窗体大小
+        mqttSplitPane.setDividerPositions(0.38);
+        leftTabPane.maxWidthProperty().bind(mqttSplitPane.widthProperty().multiply(0.38));
+        leftTabPane.minWidthProperty().bind(mqttSplitPane.widthProperty().multiply(0.38));
+        rightTabPane.minWidthProperty().bind(mqttSplitPane.widthProperty().multiply(0.62));
+        rightTabPane.maxWidthProperty().bind(mqttSplitPane.widthProperty().multiply(0.62));
+    }
+
 
 
     class PushCallback implements MqttCallback {
@@ -482,6 +531,38 @@ public class MqttController {
 
         public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
             System.out.println("deliveryComplete---------" + iMqttDeliveryToken.isComplete());
+        }
+    }
+
+    class Change implements ChangeListener<Number> {
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            //设置订阅标题的长短变化
+            subscribeTitledPane.setPrefWidth(mqttSplitPane.widthProperty().multiply(0.38).getValue());
+
+            //设置发布标题长短变化
+            publishTitledPane.setPrefWidth(mqttSplitPane.widthProperty().multiply(0.38).getValue());
+
+            //设置订阅分隔符的长短变化
+            subscribeSeparator.setPrefWidth(mqttSplitPane.widthProperty().multiply(0.38).getValue());
+
+            //设置连接分隔符的长短变化
+            connectSeparator.setPrefWidth(mqttSplitPane.widthProperty().multiply(0.38).getValue());
+
+            //设置订阅表格大小及字段长短变化
+            topicTable.setPrefWidth(mqttSplitPane.widthProperty().multiply(0.38).getValue());
+            topicColumn.setPrefWidth(topicTable.getPrefWidth()*0.7);
+            blankCheckBoxColumn.setPrefWidth(topicTable.getPrefWidth()*0.1);
+            qosColumn.setPrefWidth(topicTable.getPrefWidth()*0.2);
+
+            //
+            historyTable.setPrefWidth(mqttSplitPane.widthProperty().multiply(0.62).getValue());
+            eventColumn.setPrefWidth(historyTable.getPrefWidth()*0.15);
+            titleColumn.setPrefWidth(historyTable.getPrefWidth()*0.18);
+            messageColumn.setPrefWidth(historyTable.getPrefWidth()*0.33);
+            historyQosColumn.setPrefWidth(historyTable.getPrefWidth()*0.12);
+            dateTimeColumn.setPrefWidth(historyTable.getPrefWidth()*0.22);
         }
     }
 }
