@@ -129,16 +129,16 @@ debug:当此属性设置为true时，将打印出logback内部日志信息，实
         </encoder>
     </appender>-->
     <!-- 异步输出 -->
-    <appender name="ASYNC_LOG" class="ch.qos.logback.classic.AsyncAppender">
-        <!--
+    <!--<appender name="ASYNC_LOG" class="ch.qos.logback.classic.AsyncAppender">
+        &lt;!&ndash;
         不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的event日志,
         只保留WARN和ERROR级别的event,为了保持所有的events，设置该值为0
-        -->
+        &ndash;&gt;
         <discardingThreshold>0</discardingThreshold>
-        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        &lt;!&ndash; 更改默认的队列的深度,该值会影响性能.默认值为256 &ndash;&gt;
         <queueSize>1024</queueSize>
         <appender-ref ref="INFO_FILE"/>
-    </appender>
+    </appender>-->
 
     <!--
         level为日志级别，不区分大小写,可以设置单个类的日志级别，也可以设置路径下面所有类的日志级别，如果没有设置日志级别将会
