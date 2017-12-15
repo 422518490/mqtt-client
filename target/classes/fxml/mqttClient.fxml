@@ -18,7 +18,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<SplitPane fx:id="mqttSplitPane" dividerPositions="0.3707509881422925" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1017.0" prefWidth="1267.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mqtt.fx.MqttController">
+<SplitPane fx:id="mqttSplitPane" dividerPositions="0.37470355731225297" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1017.0" prefWidth="1267.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.mqtt.fx.MqttController">
   <items>
       <TabPane fx:id="leftTabPane">
          <tabs>
@@ -26,7 +26,7 @@
                <content>
                   <TitledPane blendMode="GREEN" collapsible="false" text="连接">
                      <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="921.0" prefWidth="415.0">
+                      <AnchorPane fx:id="leftAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="976.0" prefWidth="469.0">
                            <children>
                               <Label fx:id="serverLabel" layoutX="14.0" layoutY="26.0" text="服务端地址" />
                               <TextField fx:id="serverAddress" layoutX="91.0" layoutY="22.0" prefHeight="23.0" prefWidth="200.0" text="tcp://127.0.0.1:61613" />
@@ -48,11 +48,11 @@
                                 </content>
                               </TitledPane>
                               <Separator fx:id="connectSeparator" layoutY="322.0" prefHeight="0.0" prefWidth="478.0" />
-                              <ImageView fx:id="addTopicButton" fitHeight="28.0" fitWidth="21.0" layoutX="2.0" layoutY="361.0" onMouseClicked="#addTopic" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fx:id="addTopicButton" fitHeight="17.0" fitWidth="19.0" layoutX="14.0" layoutY="365.0" onMouseClicked="#addTopic" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../img/add.png" />
                                  </image></ImageView>
-                              <ImageView fx:id="delTopicButton" fitHeight="26.0" fitWidth="21.0" layoutX="32.0" layoutY="367.0" onMouseClicked="#delTopic" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fx:id="delTopicButton" fitHeight="26.0" fitWidth="21.0" layoutX="39.0" layoutY="367.0" onMouseClicked="#delTopic" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../img/del.png" />
                                  </image>
@@ -77,11 +77,11 @@
                                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                                 </content>
                               </TitledPane>
-                              <Label layoutX="8.0" layoutY="696.0" prefHeight="15.0" prefWidth="27.0" text="主题" />
+                              <Label fx:id="titleLabel" layoutX="8.0" layoutY="696.0" prefHeight="15.0" prefWidth="27.0" text="主题" />
                               <TextField fx:id="publishTitle" layoutX="67.0" layoutY="692.0" prefHeight="23.0" prefWidth="352.0" />
-                              <Label layoutX="8.0" layoutY="731.0" text="服务质量" />
+                              <Label fx:id="qosLabel" layoutX="8.0" layoutY="731.0" text="服务质量" />
                               <ChoiceBox fx:id="publishQos" layoutX="67.0" layoutY="727.0" prefWidth="150.0" />
-                              <Label layoutX="6.0" layoutY="777.0" text="消息" />
+                              <Label fx:id="messageLabel" layoutX="6.0" layoutY="777.0" text="消息" />
                               <Button fx:id="publish" layoutX="178.0" layoutY="870.0" mnemonicParsing="false" onMouseClicked="#publishTopic" prefHeight="23.0" prefWidth="55.0" text="发布" />
                               <TextArea fx:id="publishMessage" layoutX="68.0" layoutY="777.0" prefHeight="81.0" prefWidth="343.0" />
                            </children>
@@ -95,19 +95,19 @@
             </Tab>
          </tabs>
       </TabPane>
-      <TabPane fx:id="rightTabPane">
+      <TabPane fx:id="rightTabPane" prefHeight="1015.0" prefWidth="562.0">
          <tabs>
             <Tab closable="false" text="历史记录">
                <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="528.0" prefWidth="610.0">
+                <AnchorPane fx:id="rightAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="528.0" prefWidth="610.0">
                      <children>
-                        <TableView fx:id="historyTable" accessibleRole="PARENT" editable="true" layoutX="-2.0" prefHeight="760.0" prefWidth="809.0">
+                        <TableView fx:id="historyTable" accessibleRole="PARENT" editable="true" layoutX="-1.0" layoutY="16.0" prefHeight="752.0" prefWidth="779.0">
                           <columns>
                             <TableColumn fx:id="eventColumn" editable="false" prefWidth="124.0" text="事件" />
                             <TableColumn fx:id="titleColumn" editable="false" prefWidth="139.0" text="主题" />
                               <TableColumn fx:id="messageColumn" editable="false" prefWidth="232.0" text="消息" />
                               <TableColumn fx:id="historyQosColumn" editable="false" prefWidth="99.0" text="请求服务质量" />
-                              <TableColumn fx:id="dateTimeColumn" editable="false" prefWidth="188.0" text="时间" />
+                              <TableColumn fx:id="dateTimeColumn" editable="false" prefWidth="204.0" text="时间" />
                           </columns>
                            <opaqueInsets>
                               <Insets bottom="10.0" right="10.0" />

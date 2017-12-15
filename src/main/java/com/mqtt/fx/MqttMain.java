@@ -6,6 +6,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class MqttMain extends Application {
@@ -26,7 +27,8 @@ public class MqttMain extends Application {
         StageSelf stageSelf = StageSelf.getInstance();
         stageSelf.setStage(primaryStage);
         Parent root = FXMLLoader.load(getClass().getResource("../../../fxml/mqttClient.fxml"));
-        primaryStage.setScene(new Scene(root, 1200, 1500));
+        Screen screen = Screen.getPrimary();
+        primaryStage.setScene(new Scene(root, screen.getBounds().getWidth()-20, screen.getBounds().getHeight()-80));
         primaryStage.show();
     }
 

@@ -11,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.eclipse.paho.client.mqttv3.*;
@@ -127,6 +129,10 @@ public class MqttController {
     @FXML
     private TextArea publishMessage;
 
+    //发布按钮
+    @FXML
+    private Button publish;
+
     //订阅的title pane
     @FXML
     private TitledPane subscribeTitledPane;
@@ -167,14 +173,50 @@ public class MqttController {
     @FXML
     private Label connectStatusLabel;
 
+    //添加订阅button按钮
+    @FXML
+    private ImageView addTopicButton;
+
+    //删除订阅button按钮
+    @FXML
+    private ImageView delTopicButton;
+
+    //修改订阅button按钮
+    @FXML
+    private ImageView updateTopicButton;
+
+    //主题label
+    @FXML
+    private Label titleLabel;
+
+    //服务质量label
+    @FXML
+    private Label qosLabel;
+
+    //服务质量label
+    @FXML
+    private Label messageLabel;
+
+    @FXML
+    private AnchorPane leftAnchorPane;
+
+    @FXML
+    private AnchorPane rightAnchorPane;
+
     private MqttClient mqttClient;
     private MqttConnectOptions mqttConnectOptions;
     private Screen screen;
+    private StageSelf stageSelf;
+    private Stage stage;
 
-    //存放放大缩小时的窗体大小
-    private double maxMinSize;
-    //存放首次放大前的窗体大小
-    double tempSize;
+    //存放放大缩小时的窗体宽度大小
+    private double maxMinWidthSize;
+    //存放首次放大前的窗体宽度大小
+    double tempWidthSize;
+    //存放放大缩小时的窗体高度大小
+    private double maxMinHeightSize;
+    //存放首次放大前的窗体高度大小
+    double tempHeightSize;
     //判断是否是放大缩小操作
     private boolean maxMinBoolean = false;
     //用于初始化是否是启动加载
@@ -242,10 +284,11 @@ public class MqttController {
             HistoryMessageModel historyMessageModel = new HistoryMessageModel("连接MQTT服务器","连接MQTT服务器",text,"",LocalDateTime.now());
             historyMessageModelObservableList.add(historyMessageModel);
             historyTable.setItems(historyMessageModelObservableList);
-            StageSelf stageSelf = StageSelf.getInstance();
+            /*StageSelf stageSelf = StageSelf.getInstance();
             if(stageSelf.getStage() != null){
-                stageSelf.getStage().widthProperty().addListener(new Change());
-            }
+                stageSelf.getStage().widthProperty().addListener(new WidthChange());
+                stageSelf.getStage().heightProperty().addListener(new HeightChange());
+            }*/
         }
     }
 
@@ -305,13 +348,17 @@ public class MqttController {
 
         //设置分割线的左右两边窗体大小
         changePane();
-        StageSelf stageSelf = StageSelf.getInstance();
-        Stage stage = stageSelf.getStage();
+        //获取窗口信息
+        stageSelf = StageSelf.getInstance();
+        stage = stageSelf.getStage();
         if(stage != null){
             //初始化时默认为true
             initLoadBoolean = true;
-            stage.widthProperty().addListener(new Change());
-            //stage.heightProperty().addListener(new Change());
+            //宽度变化监听
+            stage.widthProperty().addListener(new WidthChange());
+            //高度变化监听
+            stage.heightProperty().addListener(new HeightChange());
+            //窗口放大缩小监听
             stage.maximizedProperty().addListener(new ChangeMaxMinStage());
         }
 
@@ -584,7 +631,10 @@ public class MqttController {
         }
     }
 
-    class Change implements ChangeListener<Number> {
+    /**
+     * 窗体改变大小
+     */
+    class WidthChange implements ChangeListener<Number> {
 
         @Override
         public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -593,25 +643,34 @@ public class MqttController {
                 maxMinBoolean = false;
             }
             changeStageShow();
-            //防止因为放大缩小造成的拖动不能正常完成显示
-            maxMinBoolean = false;
+            //防止因为放大缩小造成的拖动不能正常完成显示,这个地方有先后顺序，所以放在了改变高度里面设置
+            //maxMinBoolean = false;
         }
     }
 
 
+    /**
+     * 使用放大缩小按钮
+     */
     class ChangeMaxMinStage implements ChangeListener<Boolean>{
 
         @Override
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
             //如果是放大
             if(newValue){
-                //获取屏幕的最大值
-                maxMinSize = Double.parseDouble(screen.getBounds().getWidth()+"");
+                //获取屏幕的宽度最大值
+                maxMinWidthSize = Double.parseDouble(screen.getBounds().getWidth()+"");
                 //获取当前pane的位置宽度
-                tempSize = mqttSplitPane.widthProperty().getValue();
+                tempWidthSize = mqttSplitPane.widthProperty().getValue();
+                //获取屏幕的高度最大值
+                maxMinHeightSize = Double.parseDouble(screen.getBounds().getHeight()+"");
+                //获取当前pane的位置高度
+                tempHeightSize = mqttSplitPane.heightProperty().getValue();
             }else{
                 //如果是缩小则将当前的位置宽度赋值给最大值
-                maxMinSize = tempSize;
+                maxMinWidthSize = tempWidthSize;
+                //将当前位置的高度赋值给最大值
+                maxMinHeightSize = tempHeightSize;
             }
             //标明是进行放大缩小功能
             maxMinBoolean = true;
@@ -625,42 +684,118 @@ public class MqttController {
         //如果是初始化
         if(initLoadBoolean){
             screen = Screen.getPrimary();
-            //获取当前窗口的大小同时复制给中间变量
-            maxMinSize = mqttSplitPane.widthProperty().getValue();
-            tempSize = maxMinSize;
+            //获取当前窗口的宽度大小同时复制给中间变量
+            maxMinWidthSize = mqttSplitPane.widthProperty().getValue();
+            tempWidthSize = maxMinWidthSize;
+            //获取当前窗口的高度大小同时复制给中间变量
+            maxMinHeightSize = mqttSplitPane.heightProperty().getValue();
+            tempHeightSize = maxMinHeightSize;
             //标明已经初始化完成
-            initLoadBoolean = false;
+            //initLoadBoolean = false;
         }else {
             //如果已经初始化并且不是放大缩小
             if(!maxMinBoolean){
-                //获取当前窗口的大小
-                maxMinSize = mqttSplitPane.widthProperty().getValue();
+                //获取当前窗口的宽度大小
+                maxMinWidthSize = mqttSplitPane.widthProperty().getValue();
+                //获取当前窗口的高度大小
+                maxMinHeightSize = mqttSplitPane.heightProperty().getValue();
             }
         }
         //设置订阅标题的长短变化
-        subscribeTitledPane.setPrefWidth(maxMinSize * 0.38);
+        subscribeTitledPane.setPrefWidth(maxMinWidthSize * 0.38);
 
         //设置发布标题长短变化
-        publishTitledPane.setPrefWidth(maxMinSize * 0.38);
+        publishTitledPane.setPrefWidth(maxMinWidthSize * 0.38);
 
         //设置订阅分隔符的长短变化
-        subscribeSeparator.setPrefWidth(maxMinSize * 0.38);
+        subscribeSeparator.setPrefWidth(maxMinWidthSize * 0.38);
 
         //设置连接分隔符的长短变化
-        connectSeparator.setPrefWidth(maxMinSize * 0.38);
+        connectSeparator.setPrefWidth(maxMinWidthSize * 0.38);
 
         //设置订阅表格大小及字段长短变化
-        topicTable.setPrefWidth(maxMinSize * 0.38);
+        topicTable.setPrefWidth(maxMinWidthSize * 0.38);
         topicColumn.setPrefWidth(topicTable.getPrefWidth()*0.7);
         blankCheckBoxColumn.setPrefWidth(topicTable.getPrefWidth()*0.1);
         qosColumn.setPrefWidth(topicTable.getPrefWidth()*0.2);
+        //设置订阅按钮与取消订阅按钮的位置
+        subscribeTopicButton.setLayoutX(subscribeTitledPane.getPrefWidth()*0.3);
+        unsubscribeTopicButton.setLayoutX(subscribeTitledPane.getPrefWidth()*0.5);
 
         //历史表格大小及字段长短变化
-        historyTable.setPrefWidth(maxMinSize * 0.62);
+        historyTable.setPrefWidth(maxMinWidthSize * 0.62);
         eventColumn.setPrefWidth(historyTable.getPrefWidth()*0.15);
         titleColumn.setPrefWidth(historyTable.getPrefWidth()*0.18);
         messageColumn.setPrefWidth(historyTable.getPrefWidth()*0.33);
         historyQosColumn.setPrefWidth(historyTable.getPrefWidth()*0.12);
         dateTimeColumn.setPrefWidth(historyTable.getPrefWidth()*0.22);
+
     }
+
+    class HeightChange implements ChangeListener<Number>{
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            //如果是初始化
+            if(initLoadBoolean){
+                screen = Screen.getPrimary();
+                //获取当前窗口的高度大小同时复制给中间变量
+                maxMinHeightSize = mqttSplitPane.heightProperty().getValue();
+                tempHeightSize = maxMinHeightSize;
+                //标明已经初始化完成
+                initLoadBoolean = false;
+            }else {
+                //如果已经初始化并且不是放大缩小
+                if(!maxMinBoolean){
+                    //获取当前窗口的高度大小
+                    maxMinHeightSize = mqttSplitPane.heightProperty().getValue();
+                }
+            }
+            //设置连接部分的高度变化
+            serverLabel.setLayoutY(maxMinHeightSize * 0.02);
+            serverAddress.setLayoutY(maxMinHeightSize * 0.02);
+            clientLabel.setLayoutY(maxMinHeightSize * 0.06);
+            clientId.setLayoutY(maxMinHeightSize * 0.06);
+            userLabel.setLayoutY(maxMinHeightSize * 0.1);
+            userName.setLayoutY(maxMinHeightSize * 0.1);
+            passwordLabel.setLayoutY(maxMinHeightSize * 0.14);
+            password.setLayoutY(maxMinHeightSize * 0.14);
+            keepAliveLabel.setLayoutY(maxMinHeightSize * 0.18);
+            keepAlive.setLayoutY(maxMinHeightSize * 0.18);
+            connectStatusLabel.setLayoutY(maxMinHeightSize * 0.22);
+            connectionStatus.setLayoutY(maxMinHeightSize * 0.22);
+            connectButton.setLayoutY(maxMinHeightSize * 0.26);
+            disConnectButton.setLayoutY(maxMinHeightSize * 0.26);
+            connectSeparator.setLayoutY(maxMinHeightSize * 0.29);
+
+            //设置订阅部分的高度变化
+            subscribeTitledPane.setLayoutY(maxMinHeightSize * 0.31);
+            addTopicButton.setLayoutY(maxMinHeightSize * 0.343);
+            delTopicButton.setLayoutY(maxMinHeightSize * 0.345);
+            updateTopicButton.setLayoutY(maxMinHeightSize * 0.345);
+            topicTable.setLayoutY(maxMinHeightSize * 0.37);
+            topicTable.setPrefHeight(maxMinHeightSize * 0.2);
+            subscribeTopicButton.setLayoutY(maxMinHeightSize * 0.59);
+            unsubscribeTopicButton.setLayoutY(maxMinHeightSize * 0.59);
+            subscribeSeparator.setLayoutY(maxMinHeightSize * 0.63);
+
+            //设置发布部分的高度变化
+            publishTitledPane.setLayoutY(maxMinHeightSize * 0.65);
+            titleLabel.setLayoutY(maxMinHeightSize * 0.68);
+            publishTitle.setLayoutY(maxMinHeightSize * 0.68);
+            qosLabel.setLayoutY(maxMinHeightSize * 0.72);
+            publishQos.setLayoutY(maxMinHeightSize * 0.72);
+            messageLabel.setLayoutY(maxMinHeightSize * 0.76);
+            publishMessage.setLayoutY(maxMinHeightSize * 0.76);
+            publishMessage.setPrefHeight(maxMinHeightSize * 0.06);
+            publish.setLayoutY(maxMinHeightSize * 0.83);
+
+            //设置历史table部分的高度变化
+            historyTable.setPrefHeight(maxMinHeightSize * 0.8);
+
+            //防止因为放大缩小造成的拖动不能正常完成显示
+            maxMinBoolean = false;
+        }
+    }
+
 }
